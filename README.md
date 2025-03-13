@@ -1,39 +1,76 @@
-# <h1 align="center"> Forge Template </h1>
+# Ethereum to Base Token Bridge
 
-**Template repository for getting started quickly with Foundry projects**
+This repository contains a one-way token bridge that allows users to transfer tokens from the Ethereum blockchain to the Base blockchain. The smart contract locks tokens on Ethereum and mints equivalent tokens on Base.
 
-![Github Actions](https://github.com/foundry-rs/forge-template/workflows/CI/badge.svg)
+## Overview
 
-## Getting Started
+- **BridgeETH.sol**: Manages token locking on Ethereum.
+- **BridgeBase.sol**: Handles minting tokens on Base.
+- **WJcoin.sol**: ERC-20 token contract used in the bridge.
+- **Tests**: Foundry-based test suite for validating contract functionality.
 
-Click "Use this template" on [GitHub](https://github.com/foundry-rs/forge-template) to create a new repository with this repo as the initial state.
+## Features
 
-Or, if your repo already exists, run:
+✅ Lock tokens on Ethereum  
+✅ Mint equivalent tokens on Base  
+✅ Secure ownership-based minting  
+✅ Basic permission controls  
+
+## Installation
+
+Ensure you have [Foundry](https://book.getfoundry.sh/) installed:
+
 ```sh
-forge init
-forge build
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+Clone the repository and install dependencies:
+
+```sh
+git clone <repo-url>
+cd <repo-name>
+forge install
+```
+
+## Running Tests
+
+To execute tests, run:
+
+```sh
 forge test
 ```
 
-## Writing your first test
+## Usage
 
-All you need is to `import forge-std/Test.sol` and then inherit it from your test contract. Forge-std's Test contract comes with a pre-instatiated [cheatcodes environment](https://book.getfoundry.sh/cheatcodes/), the `vm`. It also has support for [ds-test](https://book.getfoundry.sh/reference/ds-test.html)-style logs and assertions. Finally, it supports Hardhat's [console.log](https://github.com/brockelmore/forge-std/blob/master/src/console.sol). The logging functionalities require `-vvvv`.
+### Locking Tokens (Ethereum)
+
+Users must approve the bridge contract before locking tokens:
 
 ```solidity
-pragma solidity 0.8.10;
-
-import "forge-std/Test.sol";
-
-contract ContractTest is Test {
-    function testExample() public {
-        vm.roll(100);
-        console.log(1);
-        emit log("hi");
-        assertTrue(true);
-    }
-}
+IERC20(tokenAddress).approve(bridgeAddress, amount);
+BridgeETH(bridgeAddress).lock(tokenAddress, amount);
 ```
 
-## Development
+### Unlocking Tokens (Base)
 
-This project uses [Foundry](https://getfoundry.sh). See the [book](https://book.getfoundry.sh/getting-started/installation.html) for instructions on how to install and use Foundry.
+Once the deposit is recorded on Base by the bridge owner:
+
+```solidity
+BridgeBase(bridgeAddress).withdraw(tokenAddress, amount);
+```
+
+## Limitations
+
+🚧 **One-way bridge:** Transfers only from Ethereum to Other blockchain.  
+🚧 **No automated relayer:** The owner must manually confirm deposits on Base.  
+
+## Roadmap
+
+- [ ] Implement a two-way bridge (Other Blockchain → Ethereum)  
+- [ ] Integrate cross-chain relayer  
+
+## License
+
+This project is licensed under the MIT License.
+
